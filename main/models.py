@@ -1,8 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
+class User(AbstractUser):
+    name = models.CharField(max_length=255)
+    avatar = models.ImageField(upload_to='avatar/',blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=255, blank=True, null=True)
+    zip_code = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta(AbstractUser.Meta):
+        swappable = "AUTH_USER_MODEL"
+    
 
 class Teacher(models.Model):
+    """Yangi o'qituvchilarni ro'yxatdan o'tkazish qismi"""
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='teachers/')
     full_name = models.CharField(max_length=255)
@@ -14,6 +30,7 @@ class Teacher(models.Model):
 
 
 class Course(models.Model):
+    """Yangi Kurs ochis qismi"""
     name = models.CharField(max_length=100)
     duration = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, help_text="1 oylik kurs narxi so'm da")
@@ -23,6 +40,7 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
+    """Kurslarga dars va mavzularni qo'shish"""
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     media = models.FileField(upload_to='videos/', blank=True, null=True)
@@ -34,7 +52,7 @@ class Lesson(models.Model):
 
 
 class Comment(models.Model):
-    """Foydalanuvchilat darslarga izoh berish qismi"""
+    """Foydalanuvchi darslarga izoh berish qismi"""
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
@@ -45,9 +63,11 @@ class Comment(models.Model):
 
 
 class Like(models.Model):
+    """Foydalanuvchi darslarga like dislike berish"""
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_like = models.BooleanField()
+    is_dislike = models.BooleanField()
     text = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -58,6 +78,3 @@ class Like(models.Model):
     def __str__(self):
         return self.lesson
 
-
-class Send_emails(models.Model):
-    ...

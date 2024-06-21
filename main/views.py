@@ -3,9 +3,16 @@ from django.shortcuts import render
 from .import models
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .serializers import TeacherSerializers, LikeSerializers, CommentSerializers, CourseSerializers, LessonSerializers
+from .serializers import TeacherSerializers, LikeSerializers, CommentSerializers, CourseSerializers, LessonSerializers, UserSerializers
 from rest_framework import generics, mixins, viewsets
 from rest_framework.decorators import action
+
+#Viewset of User
+class UserViewset(viewsets.ModelViewSet):
+    queryset = models.User.objects.all()
+    serializer_class = UserSerializers
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 
 # Start of viewset and Detail for Teacher model
 class TeacherViewset(viewsets.ModelViewSet):
@@ -100,6 +107,8 @@ class SendEmailView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+#Start of Search area
 from rest_framework import status, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
@@ -108,8 +117,15 @@ from rest_framework.request import Request
 
 from .models import Lesson  
 from .serializers import LessonSerializers  
-class SearchNews(APIView):
+
+class SearchLessons(APIView):
     def get(self, request: Request):
         word = request.query_params.get('word')
-        lessons = Lesson.objects.filter(Q(description__icontains=word) | Q(name__icontains=word))
-        return Response(LessonSerializers(lessons, many=True).data)
+        if not word:
+            raise ValidationError({'error': 'Missing search term (word parameter)'})
+
+        lessons = Lesson.objects.filter(
+            Q(description__icontains=word) | Q(name__icontains=word)
+        )
+        serializer = LessonSerializers(lessons, many=True)
+        return Response(serializer.data)

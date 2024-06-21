@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from .import models
 
+class UserSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = '__all__'
+
+
 class TeacherSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.Teacher
@@ -28,7 +34,7 @@ class CommentSerializers(serializers.ModelSerializer):
 class LikeSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.Like
-        fields = ['lesson', 'user', 'text', 'is_like']          
+        fields = ['lesson', 'user', 'text', 'is_like', 'is_dislike']          
 
 
 

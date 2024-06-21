@@ -46,6 +46,7 @@ router.register(r'like', LikeViewset)
 router.register(r'course', CourseViewset)
 router.register(r'lesson', LessonViewset)
 router.register(r'comment', CommentViewset)
+router.register(r'users', UserViewset)
 
 
 urlpatterns = [
@@ -61,7 +62,7 @@ urlpatterns = [
     path('course-detail/<int:pk>/', CourseAPIDetail.as_view()),
     path('lesson-detail/<int:pk>/', LessonAPIDetail.as_view()),
     path('send-email/', SendEmailView.as_view(), name='send-email'),
-    path('search/', SearchNews.as_view(), name='search'),
+    path('search/', SearchLessons.as_view(), name='search'),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
